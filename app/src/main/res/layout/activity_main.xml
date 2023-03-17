@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:background="@drawable/bg_color">
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/iv_mic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="176dp"
+        android:layout_marginBottom="256dp"
+        android:backgroundTint="#ADD8E6"
+        android:clickable="true"
+        app:srcCompat="@drawable/ic_baseline_mic_24" />
+
+    <AutoCompleteTextView
+        android:id="@+id/tv_speech_to_text"
+        android:layout_width="300dp"
+        android:layout_height="250dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="108dp"
+        android:hint="Type Here"
+        android:gravity="top"
+        android:inputType="text|textMultiLine|textCapSentences"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:background="@drawable/bg_text"
+        android:padding="15dp"
+        android:fontFamily="@font/poppins"/>
+
+    <Button
+        android:id="@+id/print"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="64dp"
+        android:background="@drawable/button_raduis"
+        android:fontFamily="@font/poppins"
+        android:paddingLeft="64dp"
+        android:paddingTop="10dp"
+        android:paddingRight="64dp"
+        android:paddingBottom="10dp"
+        android:text="Store"
+        android:textColor="@color/white"
+        android:textSize="14dp"
+        />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="36dp"
+        android:fontFamily="@font/poppins"
+        android:text="BRAILLE"
+        android:textColor="@color/black"
+        android:textSize="36dp" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="128dp"
+        android:layout_marginEnd="128dp"
+        android:layout_marginBottom="160dp"
+        android:padding="24dp" />
+
+
+</RelativeLayout>
