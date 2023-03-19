@@ -23,6 +23,10 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.ml.naturallanguage.FirebaseNaturalLanguage;
+import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslateLanguage;
+import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslator;
+import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslatorOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,9 +42,10 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_SPEECH_INPUT = 1;
     String[] langCode = new String[]{"ta-IN","te-IN","kn-IN","hi-IN","en-IN"};
     Spinner lanDrop;
-    String language, dateNow ;
+    String language, langSpeech, finalTxt=null;
+    int langCodeTrans=50;
     Button print;
-    TextView history;
+    TextView history, translate;
 
 
     @Override
@@ -56,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
         lanDrop = findViewById(R.id.spinner);
         print = findViewById(R.id.print);
         history = findViewById(R.id.history);
+        translate = findViewById(R.id.translate);
+
 
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.languages, android.R.layout.simple_spinner_item);
@@ -66,22 +73,26 @@ public class MainActivity extends AppCompatActivity {
         iv_mic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String langSpeech;
+
                 language = lanDrop.getSelectedItem().toString();
                 Toast.makeText(getApplicationContext(),language , Toast.LENGTH_LONG).show();
 
                 switch(language) {
                     case "Telugu":
                         langSpeech = langCode[1];
+                        langCodeTrans=51;
                         break;
                     case "Kannada":
                         langSpeech = langCode[2];
+                        langCodeTrans=31;
                         break;
                     case "Hindi":
                         langSpeech = langCode[3];
+                        langCodeTrans=22;
                         break;
                     case "English":
                         langSpeech = langCode[4];
+                        langCodeTrans=11;
                         break;
                     default:
                         langSpeech = langCode[0];
@@ -101,12 +112,71 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        translate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String txt = tv_Speech_to_text.getText().toString();
+
+                if(langCodeTrans!=11){
+
+                FirebaseTranslatorOptions options = new FirebaseTranslatorOptions.Builder()
+                        .setSourceLanguage(FirebaseTranslateLanguage.HI)
+                        .setTargetLanguage(FirebaseTranslateLanguage.EN)
+                        .build();
+                final FirebaseTranslator everyToEnglishTranslator =
+                        FirebaseNaturalLanguage.getInstance().getTranslator(options);
+
+
+                    everyToEnglishTranslator.translate(txt).addOnSuccessListener(new OnSuccessListener<String>() {
+                        @Override
+                        public void onSuccess(String s) {
+                            finalTxt = s;
+                            Toast.makeText(MainActivity.this, "translate success" + s, Toast.LENGTH_SHORT).show();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(MainActivity.this, "Fail to translate", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                tv_Speech_to_text.setText(finalTxt);
+            }
+        });
+
         print.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String txt = tv_Speech_to_text.getText().toString();
+
+
+                FirebaseTranslatorOptions options = new FirebaseTranslatorOptions.Builder()
+                        .setSourceLanguage(Integer.parseInt(FirebaseTranslateLanguage.languageCodeForLanguage(langCodeTrans)))
+                        .setTargetLanguage(FirebaseTranslateLanguage.EN)
+                        .build();
+                final FirebaseTranslator everyToEnglishTranslator =
+                        FirebaseNaturalLanguage.getInstance().getTranslator(options);
+
+                if(langCodeTrans!=11){
+                    everyToEnglishTranslator.translate(txt).addOnSuccessListener(new OnSuccessListener<String>() {
+                        @Override
+                        public void onSuccess(String s) {
+                            finalTxt =s;
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(MainActivity.this, "Fail to translate", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+
+                String date = "19 March";
                 Map<String, Object> data = new HashMap<>();
-                data.put("text", txt);
+                data.put("text", finalTxt);
+                data.put("date", date);
                 Toast toast = Toast.makeText(getApplicationContext(), "Successful", Toast.LENGTH_SHORT);
                 db.collection("text")
                         .add(data)
