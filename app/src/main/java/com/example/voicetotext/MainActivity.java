@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.View;
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_SPEECH_INPUT = 1;
     String[] langCode = new String[]{"ta-IN","te-IN","kn-IN","hi-IN","en-IN"};
     Spinner lanDrop;
-    String language, langSpeech, finalTxt=null;
+    String language, langSpeech;
     Button print;
     TextView history, translate;
     FirebaseTranslatorOptions tamilOptions, teluguOptions, kannadaOptions, hindiOptions;
@@ -58,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Handler handler = new Handler();
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -82,7 +85,10 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
 
-        allTranslator = FirebaseNaturalLanguage.getInstance().getTranslator(tamilOptions);
+        tamilTranslator = FirebaseNaturalLanguage.getInstance().getTranslator(tamilOptions);
+        teluguTranslator = FirebaseNaturalLanguage.getInstance().getTranslator(teluguOptions);
+        kannadaTranslator = FirebaseNaturalLanguage.getInstance().getTranslator(kannadaOptions);
+        hindiTranslator = FirebaseNaturalLanguage.getInstance().getTranslator(hindiOptions);
 
 
         conditions = new FirebaseModelDownloadConditions.Builder()
@@ -111,23 +117,23 @@ public class MainActivity extends AppCompatActivity {
                 switch(language) {
                     case "Telugu":
                         langSpeech = langCode[1];
-                        setTranslator(tamilOptions);
+
                         break;
                     case "Kannada":
                         langSpeech = langCode[2];
-                        setTranslator(teluguOptions);
+
                         break;
                     case "Hindi":
                         langSpeech = langCode[3];
-                        setTranslator(hindiOptions);
+
                         break;
                     case "English":
                         langSpeech = langCode[4];
-                        flag=1;
+
                         break;
                     default:
                         langSpeech = langCode[0];
-                        setTranslator(tamilOptions);
+
                 }
 
                 Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -145,38 +151,105 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
             translate.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    language = lanDrop.getSelectedItem().toString();
+                    String txt = tv_Speech_to_text.getText().toString();
+                    Toast.makeText(MainActivity.this,"translating",Toast.LENGTH_SHORT).show();
+
+                        if(language.equals("Telugu")){
+                            teluguTranslator.downloadModelIfNeeded(conditions)
+                                    .addOnSuccessListener(
+                                            new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void v) {
+                                                    Toast.makeText(MainActivity.this,"still translating",Toast.LENGTH_SHORT).show();
+                                                    translateLang(txt, language);
+                                                }
+                                            })
+                                    .addOnFailureListener(
+                                            new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+
+                                                }
+                                            });
+                        }
 
 
-                    if(flag==1){
-                        String txt = tv_Speech_to_text.getText().toString();
-                        Toast.makeText(MainActivity.this,"translating",Toast.LENGTH_SHORT).show();
+                        if(language.equals("Kannada"))    {
+                            kannadaTranslator.downloadModelIfNeeded(conditions)
+                                    .addOnSuccessListener(
+                                            new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void v) {
+                                                    Toast.makeText(MainActivity.this,"still translating",Toast.LENGTH_SHORT).show();
+                                                    translateLang(txt, language);
+                                                }
+                                            })
+                                    .addOnFailureListener(
+                                            new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
 
-                        allTranslator.downloadModelIfNeeded(conditions)
-                                .addOnSuccessListener(
-                                        new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void v) {
-                                                Toast.makeText(MainActivity.this,"still translating",Toast.LENGTH_SHORT).show();
-                                                translateLang(txt, allTranslator);
-                                            }
-                                        })
-                                .addOnFailureListener(
-                                        new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
+                                                }
+                                            });
+                        }
+                        if(language.equals("Hindi")){
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    hindiTranslator.downloadModelIfNeeded(conditions)
+                                            .addOnSuccessListener(
+                                                    new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void v) {
+                                                            Toast.makeText(MainActivity.this,"still translating",Toast.LENGTH_SHORT).show();
+                                                            translateLang(txt, language);
+                                                        }
+                                                    })
+                                            .addOnFailureListener(
+                                                    new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
 
-                                            }
-                                        });
-                    }else{
-                        Toast.makeText(MainActivity.this,"Already in English",Toast.LENGTH_SHORT).show();
-                    }
+                                                        }
+                                                    });
+                                }
+                            }, 3000);
+                        }
+
+
+
+
+                        if(language.equals("Tamil")){
+                            tamilTranslator.downloadModelIfNeeded(conditions)
+                                    .addOnSuccessListener(
+                                            new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void v) {
+                                                    Toast.makeText(MainActivity.this,"still translating",Toast.LENGTH_SHORT).show();
+                                                    translateLang(txt, language);
+                                                }
+                                            })
+                                    .addOnFailureListener(
+                                            new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+
+                                                }
+                                            });
+                        }
+                    if(language.equals("English")){
+                            Toast.makeText(MainActivity.this,"Already in English",Toast.LENGTH_SHORT).show();
+                        }
+
+                    Toast.makeText(MainActivity.this,"wait few seconds",Toast.LENGTH_SHORT).show();
 
                 }
             });
+
 
 
 
@@ -238,28 +311,86 @@ public class MainActivity extends AppCompatActivity {
         // TODO Auto-generated method stub
     }
 
-    public void setTranslator(FirebaseTranslatorOptions allOptions){
-        allTranslator = FirebaseNaturalLanguage.getInstance().getTranslator(allOptions);
-    }
 
-    public void translateLang(String txt,  FirebaseTranslator allTranslator){
+    public void translateLang(String txt, String lang){
 
-        allTranslator.translate(txt)
-                .addOnSuccessListener(
-                        new OnSuccessListener<String>() {
-                            @Override
-                            public void onSuccess(@NonNull String translatedText) {
-                                tv_Speech_to_text.setText(translatedText);
-                                Toast.makeText(MainActivity.this,translatedText,Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                .addOnFailureListener(
-                        new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(MainActivity.this,"failed to convert",Toast.LENGTH_SHORT).show();
-                            }
-                        });
+        switch(lang) {
+            case "Telugu":
+                teluguTranslator.translate(txt)
+                        .addOnSuccessListener(
+                                new OnSuccessListener<String>() {
+                                    @Override
+                                    public void onSuccess(@NonNull String translatedText) {
+                                        tv_Speech_to_text.setText(translatedText);
+                                        Toast.makeText(MainActivity.this,translatedText,Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                        .addOnFailureListener(
+                                new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(MainActivity.this,"failed to convert",Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                break;
+            case "Kannada":
+                kannadaTranslator.translate(txt)
+                        .addOnSuccessListener(
+                                new OnSuccessListener<String>() {
+                                    @Override
+                                    public void onSuccess(@NonNull String translatedText) {
+                                        tv_Speech_to_text.setText(translatedText);
+                                        Toast.makeText(MainActivity.this,translatedText,Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                        .addOnFailureListener(
+                                new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(MainActivity.this,"failed to convert",Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                break;
+            case "Hindi":
+                hindiTranslator.translate(txt)
+                        .addOnSuccessListener(
+                                new OnSuccessListener<String>() {
+                                    @Override
+                                    public void onSuccess(@NonNull String translatedText) {
+                                        tv_Speech_to_text.setText(translatedText);
+                                        Toast.makeText(MainActivity.this,translatedText,Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                        .addOnFailureListener(
+                                new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(MainActivity.this,"failed to convert",Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                break;
+            case "English":
+                break;
+            default:
+                tamilTranslator.translate(txt)
+                        .addOnSuccessListener(
+                                new OnSuccessListener<String>() {
+                                    @Override
+                                    public void onSuccess(@NonNull String translatedText) {
+                                        tv_Speech_to_text.setText(translatedText);
+                                        Toast.makeText(MainActivity.this,translatedText,Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                        .addOnFailureListener(
+                                new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(MainActivity.this,"failed to convert",Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
+        }
+
     }
 }
 
