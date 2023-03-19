@@ -30,14 +30,17 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+
+
 public class MainActivity extends AppCompatActivity {
     private ImageView iv_mic;
     private TextView tv_Speech_to_text;
     private static final int REQUEST_CODE_SPEECH_INPUT = 1;
     String[] langCode = new String[]{"ta-IN","te-IN","kn-IN","hi-IN","en-IN"};
     Spinner lanDrop;
-    String language;
+    String language, dateNow ;
     Button print;
+    TextView history;
 
 
     @Override
@@ -48,12 +51,11 @@ public class MainActivity extends AppCompatActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // DocumentReference dbTextRef = db.collection("text").document();
 
-
-
         iv_mic = findViewById(R.id.iv_mic);
         tv_Speech_to_text = findViewById(R.id.tv_speech_to_text);
         lanDrop = findViewById(R.id.spinner);
         print = findViewById(R.id.print);
+        history = findViewById(R.id.history);
 
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.languages, android.R.layout.simple_spinner_item);
@@ -105,12 +107,14 @@ public class MainActivity extends AppCompatActivity {
                 String txt = tv_Speech_to_text.getText().toString();
                 Map<String, Object> data = new HashMap<>();
                 data.put("text", txt);
+                Toast toast = Toast.makeText(getApplicationContext(), "Successful", Toast.LENGTH_SHORT);
                 db.collection("text")
                         .add(data)
                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
                                 Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
+                                toast.show();
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
@@ -120,8 +124,14 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
 
-                Toast toast = Toast.makeText(getApplicationContext(), txt, Toast.LENGTH_SHORT);
-                toast.show();
+            }
+        });
+
+        history.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -146,4 +156,5 @@ public class MainActivity extends AppCompatActivity {
         // TODO Auto-generated method stub
     }
 }
+
 
