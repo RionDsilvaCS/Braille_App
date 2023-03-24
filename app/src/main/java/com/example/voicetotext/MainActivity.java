@@ -6,13 +6,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import java.text.SimpleDateFormat;
 import android.os.Bundle;
-import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.View;
-import android.view.translation.Translator;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -23,7 +23,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.collection.ImmutableSortedMap;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.ml.common.modeldownload.FirebaseModelDownloadConditions;
@@ -32,35 +31,45 @@ import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslateLanguag
 import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslator;
 import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslatorOptions;
 
+
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
 
 
 public class MainActivity extends AppCompatActivity {
-    private ImageView iv_mic;
-    private TextView tv_Speech_to_text;
+    ImageView iv_mic;
+    TextView tv_Speech_to_text;
     private static final int REQUEST_CODE_SPEECH_INPUT = 1;
+    Calendar calendar;
+    SimpleDateFormat dateFormat;
+    String date;
     String[] langCode = new String[]{"ta-IN","te-IN","kn-IN","hi-IN","en-IN"};
     Spinner lanDrop;
     String language, langSpeech;
     Button print;
     TextView history, translate;
     FirebaseTranslatorOptions tamilOptions, teluguOptions, kannadaOptions, hindiOptions;
-    FirebaseTranslator allTranslator, tamilTranslator, teluguTranslator, kannadaTranslator, hindiTranslator;
+    FirebaseTranslator tamilTranslator, teluguTranslator, kannadaTranslator, hindiTranslator;
     FirebaseModelDownloadConditions conditions;
-    int flag=0;
 
 
+
+
+    @SuppressLint("SimpleDateFormat")
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Handler handler = new Handler();
+//        dateFormat = new SimpleDateFormat("EEE, MMM d, ''yy");
+//        date = dateFormat.format(calendar.getTime());
+        date = "21 March";
+
+
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -197,10 +206,8 @@ public class MainActivity extends AppCompatActivity {
                                             });
                         }
                         if(language.equals("Hindi")){
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    hindiTranslator.downloadModelIfNeeded(conditions)
+
+                            hindiTranslator.downloadModelIfNeeded(conditions)
                                             .addOnSuccessListener(
                                                     new OnSuccessListener<Void>() {
                                                         @Override
@@ -216,12 +223,8 @@ public class MainActivity extends AppCompatActivity {
 
                                                         }
                                                     });
-                                }
-                            }, 3000);
+
                         }
-
-
-
 
                         if(language.equals("Tamil")){
                             tamilTranslator.downloadModelIfNeeded(conditions)
@@ -258,11 +261,11 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String txt = tv_Speech_to_text.getText().toString();
 
-                String date = "19 March";
+//                String date = "19 March";
                 Map<String, Object> data = new HashMap<>();
                 data.put("text", txt);
                 data.put("date", date);
-                Toast toast = Toast.makeText(getApplicationContext(), "Successful", Toast.LENGTH_SHORT);
+                Toast toast = Toast.makeText(getApplicationContext(), "Successfully updated", Toast.LENGTH_SHORT);
                 db.collection("text")
                         .add(data)
                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {

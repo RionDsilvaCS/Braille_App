@@ -4,14 +4,10 @@ public class HistoryCard {
 
     private String content, date;
 
-
-
-    // Constructor
     public HistoryCard(String content, String date) {
         this.content = content;
         this.date = date;
     }
-
 
     public String getContent() {
         return content;
@@ -28,6 +24,5 @@ public class HistoryCard {
     public void setDate(String date) {
         this.date = date;
     }
-
 
 }

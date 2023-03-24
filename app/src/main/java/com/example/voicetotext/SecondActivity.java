@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,8 +23,9 @@ import java.util.List;
 
 public class SecondActivity extends AppCompatActivity {
 
-    TextView history;
+    TextView history, context;
     String content, date;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,7 @@ public class SecondActivity extends AppCompatActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         history = findViewById(R.id.history);
+
 
         RecyclerView journalHistory = findViewById(R.id.journalHistory);
 
@@ -52,8 +55,6 @@ public class SecondActivity extends AppCompatActivity {
                                 content = d.getString("text");
                                 date = d.getString("date");
                                 HistoryCardArrayList.add(new HistoryCard(content, date));
-
-
                             }
 
                             HistoryAdapter historyAdapter = new HistoryAdapter (SecondActivity.this, HistoryCardArrayList);
@@ -69,13 +70,9 @@ public class SecondActivity extends AppCompatActivity {
                 }).addOnFailureListener(new OnFailureListener() {
 
                     public void onFailure(@NonNull Exception e) {
-                        // if we do not get any data or any error we are displaying
-                        // a toast message that we do not get any data
                         Toast.makeText(SecondActivity.this, "Fail to get the data.", Toast.LENGTH_SHORT).show();
                     }
                 });
-
-
 
         history.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,4 +82,6 @@ public class SecondActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }
