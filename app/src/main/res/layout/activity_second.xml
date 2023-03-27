@@ -8,24 +8,41 @@
     android:background="@drawable/bg_color">
 
     <TextView
-        android:id="@+id/history"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="32dp"
+        android:layout_toEndOf="@+id/history"
         android:fontFamily="@font/poppins_bold"
         android:text="History"
         android:textColor="@color/black"
         android:textSize="24dp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/journalHistory"
-        android:layout_width="match_parent"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
-        />
+        android:layout_below="@+id/history"
+        android:layout_marginTop="36dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/journalHistory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <ImageView
+        android:id="@+id/history"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="36dp"
+        app:srcCompat="@drawable/back_arrow_top" />
 
 
 </RelativeLayout>

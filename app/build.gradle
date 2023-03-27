@@ -47,4 +47,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-ml-natural-language:22.0.1'
     implementation 'com.google.firebase:firebase-ml-natural-language-translate-model:20.0.9'
 
+    implementation 'com.google.code.gson:gson:2.9.0'
+
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01"
+
 }

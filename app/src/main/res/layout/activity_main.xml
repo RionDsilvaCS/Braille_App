@@ -11,11 +11,11 @@
         android:id="@+id/iv_mic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_speech_to_text"
         android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="176dp"
-        android:layout_marginBottom="256dp"
+        android:layout_marginTop="60dp"
         android:backgroundTint="#ADD8E6"
         android:clickable="true"
         android:tint="#802D2D"
@@ -25,18 +25,18 @@
         android:id="@+id/tv_speech_to_text"
         android:layout_width="300dp"
         android:layout_height="250dp"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/textView"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="108dp"
-        android:hint="Type Here"
-        android:gravity="top"
-        android:inputType="text|textMultiLine|textCapSentences"
-        android:textSize="16sp"
-        android:textColor="@color/black"
+        android:layout_marginTop="10dp"
         android:background="@drawable/bg_text"
-        android:padding="15dp"
+        android:elevation="10dp"
         android:fontFamily="@font/poppins"
-        android:elevation="10dp"/>
+        android:gravity="top"
+        android:hint="Type Here"
+        android:inputType="text|textMultiLine|textCapSentences"
+        android:padding="15dp"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
 
     <Button
         android:id="@+id/print"
@@ -74,13 +74,13 @@
         android:id="@+id/spinner"
         android:layout_width="64dp"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/iv_mic"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="128dp"
+        android:layout_marginTop="60dp"
         android:layout_marginEnd="128dp"
-        android:layout_marginBottom="160dp"
         android:padding="24dp" />
 
     <TextView
@@ -92,7 +92,7 @@
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="20dp"
         android:text="History"
-        android:textSize="16dp"
+        android:textSize="18dp"
         android:textColor="@color/white"
         android:fontFamily="@font/poppins"
         />
@@ -101,14 +101,14 @@
         android:id="@+id/translate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_speech_to_text"
         android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
         android:layout_marginStart="60dp"
-        android:layout_marginBottom="312dp"
+        android:layout_marginTop="20dp"
         android:fontFamily="@font/poppins"
         android:text="Translate"
         android:textColor="@color/white"
-        android:textSize="16dp" />
+        android:textSize="18dp" />
 
 
 </RelativeLayout>

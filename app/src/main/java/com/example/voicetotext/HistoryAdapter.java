@@ -67,7 +67,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.viewHold
 
     }
 
-
     @Override
     public int getItemCount() {
 
