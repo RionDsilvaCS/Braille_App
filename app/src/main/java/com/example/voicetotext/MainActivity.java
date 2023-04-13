@@ -21,10 +21,17 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Source;
+import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.ml.common.modeldownload.FirebaseModelDownloadConditions;
 import com.google.firebase.ml.naturallanguage.FirebaseNaturalLanguage;
 import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslateLanguage;
@@ -34,7 +41,9 @@ import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslatorOption
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -44,8 +53,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView iv_mic;
     TextView tv_Speech_to_text;
     private static final int REQUEST_CODE_SPEECH_INPUT = 1;
-    Calendar calendar;
-    SimpleDateFormat dateFormat;
+
     String date;
     String[] langCode = new String[]{"ta-IN","te-IN","kn-IN","hi-IN","en-IN"};
     Spinner lanDrop;
@@ -56,8 +64,9 @@ public class MainActivity extends AppCompatActivity {
     FirebaseTranslator tamilTranslator, teluguTranslator, kannadaTranslator, hindiTranslator;
     FirebaseModelDownloadConditions conditions;
 
+    int count;
 
-
+    Date currentTime = Calendar.getInstance().getTime();
 
     @SuppressLint("SimpleDateFormat")
     @Override
@@ -65,10 +74,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        dateFormat = new SimpleDateFormat("EEE, MMM d, ''yy");
-//        date = dateFormat.format(calendar.getTime());
-        date = "21 March";
-
+        date = String.valueOf(currentTime);
+        date  = date.substring(0, Math.min(date.length(), 10));
 
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -115,6 +122,9 @@ public class MainActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         lanDrop.setAdapter(adapter);
 
+        DocumentReference docRef = db.collection("count").document("count");
+
+        WriteBatch batch = db.batch();
 
         iv_mic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -265,22 +275,36 @@ public class MainActivity extends AppCompatActivity {
                 Map<String, Object> data = new HashMap<>();
                 data.put("text", txt);
                 data.put("date", date);
+
                 Toast toast = Toast.makeText(getApplicationContext(), "Successfully updated", Toast.LENGTH_SHORT);
-                db.collection("text")
-                        .add(data)
-                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+
+                db.collection("count")
+                        .document("count")
+                        .get().
+                        addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
-                            public void onSuccess(DocumentReference documentReference) {
-                                Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
-                                toast.show();
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                Toast.makeText(getApplicationContext(), "inside", Toast.LENGTH_SHORT).show();
+                                if (task.isSuccessful()) {
+                                    DocumentSnapshot document = task.getResult();
+//                                    Toast.makeText(getApplicationContext(), String.valueOf(document.getString("count")), Toast.LENGTH_SHORT).show();
+                                    count = Integer.parseInt(document.getString("count"));
+                                    count += 1;
+                                    db.collection("text").document(String.valueOf(count)).set(data);
+                                    batch.update(docRef, "count", String.valueOf(count));
+                                    batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            Toast.makeText(MainActivity.this, "Journal count updated", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+
+                                    toast.show();
+                            } else {
+                                Log.d(TAG, "Cached get failed: ", task.getException());
                             }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w(TAG, "Error adding document", e);
-                            }
-                        });
+                    }
+                });
 
             }
         });
@@ -288,11 +312,10 @@ public class MainActivity extends AppCompatActivity {
         history.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+                Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
                 startActivity(intent);
             }
         });
-
     }
 
     @Override
@@ -311,7 +334,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onNothingSelected(AdapterView<?> arg0) {
-        // TODO Auto-generated method stub
+
     }
 
 

@@ -2,8 +2,8 @@
     <!-- Base application theme. -->
     <style name="Theme.VoiceToText" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">#ADD8E6</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimary">#4663AC</item>
+        <item name="colorPrimaryVariant">#4663AC</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>

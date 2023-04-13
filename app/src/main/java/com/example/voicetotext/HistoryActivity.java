@@ -1,34 +1,38 @@
 package com.example.voicetotext;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.MotionEvent;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Source;
 
 import java.util.ArrayList;
 import java.util.List;
 
+public class HistoryActivity extends AppCompatActivity {
 
-public class SecondActivity extends AppCompatActivity {
-
-    TextView history, context;
+    ImageView history;
+    TextView context;
     String content, date;
     ArrayList<HistoryCard> HistoryCardArrayList;
     ArrayList<String> docId;
@@ -38,7 +42,7 @@ public class SecondActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_second);
+        setContentView(R.layout.activity_history);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -49,12 +53,18 @@ public class SecondActivity extends AppCompatActivity {
         RecyclerView journalHistory = findViewById(R.id.journalHistory);
 
         HistoryCardArrayList = new ArrayList<HistoryCard>();
-        HistoryCardArrayList.add(new HistoryCard("Hello good morning", "15 March"));
+//        HistoryCardArrayList.add(new HistoryCard("Hello good morning", "15 March"));
+
+
+//        Toast.makeText(getApplicationContext(), docRef.get("count"), Toast.LENGTH_LONG).show();
+
 
 
         historySwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+
+
                 db.collection("text").get()
                         .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
 
@@ -72,20 +82,20 @@ public class SecondActivity extends AppCompatActivity {
                                         }
                                     }
 
-                                    HistoryAdapter historyAdapter = new HistoryAdapter (SecondActivity.this, HistoryCardArrayList);
-                                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(SecondActivity.this, LinearLayoutManager.VERTICAL, false);
+                                    HistoryAdapter historyAdapter = new HistoryAdapter (HistoryActivity.this, HistoryCardArrayList);
+                                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(HistoryActivity.this, LinearLayoutManager.VERTICAL, false);
                                     journalHistory.setLayoutManager(linearLayoutManager);
                                     journalHistory.setAdapter(historyAdapter);
 
                                 } else {
 
-                                    Toast.makeText(SecondActivity.this, "No data found in Database", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(HistoryActivity.this, "No data found in Database", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }).addOnFailureListener(new OnFailureListener() {
 
                             public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(SecondActivity.this, "Fail to get the data.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(HistoryActivity.this, "Fail to get the data.", Toast.LENGTH_SHORT).show();
                             }
                         });
                 historySwipe.setRefreshing(false);
@@ -95,11 +105,11 @@ public class SecondActivity extends AppCompatActivity {
         history.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(SecondActivity.this, MainActivity.class);
+                Intent intent = new Intent(HistoryActivity.this, MainActivity.class);
                 startActivity(intent);
             }
         });
+
+
     }
-
-
 }
