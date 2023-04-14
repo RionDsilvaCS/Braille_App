@@ -25,6 +25,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -58,13 +59,14 @@ public class MainActivity extends AppCompatActivity {
     String[] langCode = new String[]{"ta-IN","te-IN","kn-IN","hi-IN","en-IN"};
     Spinner lanDrop;
     String language, langSpeech;
-    Button print;
+    Button print, signOut;
     TextView history, translate;
     FirebaseTranslatorOptions tamilOptions, teluguOptions, kannadaOptions, hindiOptions;
     FirebaseTranslator tamilTranslator, teluguTranslator, kannadaTranslator, hindiTranslator;
     FirebaseModelDownloadConditions conditions;
 
     int count;
+    private FirebaseAuth mAuth;
 
     Date currentTime = Calendar.getInstance().getTime();
 
@@ -76,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
 
         date = String.valueOf(currentTime);
         date  = date.substring(0, Math.min(date.length(), 10));
+
+        mAuth = FirebaseAuth.getInstance();
 
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -117,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
         print = findViewById(R.id.print);
         history = findViewById(R.id.history);
         translate = findViewById(R.id.translate);
+        signOut = findViewById(R.id.signOut);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.languages, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -313,6 +318,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        signOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mAuth.signOut();
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
         });
